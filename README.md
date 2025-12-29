@@ -28,13 +28,13 @@ let (nume, varsta, inaltime) = persoana_cu_type;
 
 ### Mutabilitatea
 ```rust
-    // Mutabilitate
-    let persoana_imutabila = ("Imutabil", 1, 1.0);
-    // persoana_imutabila.1 = 1;  cannot mutate
-    let mut persoana_mutabila = ("Mutabil", 1, 3.5);
-    println!("Inainte DE SCHIMBARE: {:?}", persoana_mutabila);
-    persoana_mutabila.0 = "Am schimbat";
-    println!("Dupa SCHIMBARE: {:?}", persoana_mutabila);
+// Mutabilitate
+let persoana_imutabila = ("Imutabil", 1, 1.0);
+// persoana_imutabila.1 = 1;  cannot mutate
+let mut persoana_mutabila = ("Mutabil", 1, 3.5);
+println!("Inainte DE SCHIMBARE: {:?}", persoana_mutabila);
+persoana_mutabila.0 = "Am schimbat";
+println!("Dupa SCHIMBARE: {:?}", persoana_mutabila);
 ```
 
 ### Ownership
@@ -92,7 +92,7 @@ let (nume, varsta, inaltime) = persoana_cu_type;
 
 
 ```
-
+## Capitol 1 - Base
 ### CONSTANTE
 > **SNAKE_CASE**    
 > Spre deosebire de variabile, constantelor trebuie să li se specifice explicit tipul la declarare.
@@ -296,3 +296,192 @@ fn main() {
 }
 
 ```
+
+---
+
+## Capitol 2 - Control Flow
+### if / else if / else 
+> Condițiile nu au nevoie de paranteze! 
+
+> Toți operatorii relaționali și logici funcționează la fel: `==`, `!=`, `<`, `>`, `<=`, `>=`, `!`, `||`, `&&`.
+
+```rust
+fn main() {
+    let x = 42;
+    if x < 42 {
+        println!("mai puțin de 42");
+    } else if x == 42 {
+        println!("egal cu 42");
+    } else {
+        println!("mare mare de 42");
+    }
+}
+```
+
+### Bucle infinite
+> Rust face asta într-un mod foarte simplu.
+
+> `break` vă va arunca în afara buclei când sunteți pregătit.
+
+```rust
+fn main(){
+    let mut x = 0;
+    loop {
+        x+=1;
+        if x % 2 == 0 {
+            println!("x : {} e par.",x)
+        }
+        if x == 42 {
+            break;
+        }
+    }
+}
+```
+
+### while loop
+> `while` vă lasă să adăugați o condiție logică unei bucle.
+
+> Dacă condiția impusă buclei devine **falsă**, bucla se va **termina**.
+
+```rust
+fn main(){
+    let mut x = 0;
+    while x !=42{
+        x+=3;
+        println!("x in while e : {}", x);
+    }
+}
+```
+
+### for loop
+
+> Bucla `for` din Rust e o îmbunătățire importantă. Ea **iterează** peste valorile oricărei expresii care poate fi transformată într-un **iterator**. Vă întrebați ce este un **iterator**? Un **iterator** este un obiect pe care îl puteți întreba "Care este următorul element pe care îl ai?" până când acesta nu mai are elemente.
+
+> **Rust** poate crea ușor `iteratori` care generează o **secvență de numere întregi**.
+
+> Operatorul `..` creează un **iterator** care generează numere **de la un număr până la alt număr**, din unu în unu, fără să îl includă pe cel din urmă.
+
+> Operatorul `..=` creează un **iterator** care generează numere **de la un număr până la alt număr**, din unu în unu, **inclusiv** cel din urmă.
+
+```rust
+// Bucla FOR
+fn main(){
+    let mut x = 0;
+    // de la 0 la 4 | 0 < 5
+    for x in 0..5 {
+        println!("x in 0..5 : {}", x);
+    }
+
+    // de la 0 la 5 | 0 <= 5
+    for x in 0..=5 {
+        println!("x in 0..=5 : {}", x);
+    }
+}
+```
+
+### match (fostul switch)
+> `match` este **exhaustiv**, deci toate cazurile trebuie să fie abordate și implementate.
+
+> **Matching**, combinat cu destructurarea datelor, este de departe unul din cele mai întâlnite șabloane de programare pe care le veți vedea în Rust.
+
+```rust
+fn main() {
+    let x = 42;
+
+    match x {
+        0 => {
+            println!("am găsit zero");
+        }
+        // putem face un caz pentru mai multe valori
+        1 | 2 => {
+            println!("am găsit 1 sau 2!");
+        }
+        // putem face un caz pentru o mulțime
+        3..=9 => {
+            println!("am găsit un număr între 3 și 9 inclusiv");
+        }
+        // putem pune numărul care respectă cazul într-o variabilă
+        matched_num @ 10..=100 => {
+            println!("am găsit numărul {} între 10 și 100!", matched_num);
+        }
+        // acesta este cazul implicit care trebuie să existe dacă
+        // nu sunt abordate toate cazurile posibile
+        _ => {
+            println!("am găsit alt număr!");
+        }
+    }
+
+```
+
+### Returnarea unor valori dintr-o buclă
+
+> `loop` poate fi oprit pentru a returna o valoare.
+
+```rust
+fn main() {
+    let mut x = 0;
+    let v = loop {
+        x += 1;
+        if x == 13 {
+            break "am găsit 13";
+        }
+    };
+    println!("v={}", v);
+}
+
+```
+
+### Returnarea unor valori din expresii block
+
+> `if-urile`, `match-urile`, funcțiile și domeniile bloc au un mod unic de a returna valori în Rust.
+
+> **Dacă ultima instrucțiune** din interiorul unui `if`, `match`, `funcții` sau `domeniu bloc` este o expresie fără `;`, Rust o va returna sub forma unei valori din acel bloc. 
+
+> Acesta este un mod foarte bun de a crea o logică concisă care returnează o valoare care poate fi pusă într-o variabilă nouă.
+
+> Observăm cum acest lucru permite unui `if` să funcționeze ca o **expresie ternară concisă**.
+```rust
+fn example() -> i32 {
+    let x = 42;
+    // expresia ternară concisă
+    let v = if x < 42 { -1 } else { 1 };
+    println!("din if: {}", v);
+
+    let food = "hamburger";
+    let result = match food {
+        "hotdog" => "este un hotdog",
+        // observați că acoladele sunt opționale când există
+        // o expresie simplă de returnare
+        _ => "nu este un hotdog",
+    };
+    println!("tipul de mâncare: {}", result);
+
+    let v = {
+        // Acest domeniu de vizibilitate ne permite să nu poluăm spațiul funcțiilor
+        let a = 1;
+        let b = 2;
+        a + b
+    };
+    println!("din bloc: {}", v);
+
+    // Modul idiomatic de a returna o valoare în Rust la sfâșitul unei funcții
+    v + 4
+}
+
+fn main() {
+    println!("din funcție: {}", example());
+}
+
+```
+
+---
+
+
+
+
+
+
+
+
+
+
