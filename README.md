@@ -600,7 +600,7 @@ fn main() {
 }
 ```
 
-###  struct numit si concis
+### Grupare semnatica a Struct like TUPLU
 
 ```rust
 struct TupleStruct(i32, i32);
@@ -608,9 +608,7 @@ struct NormalStruct {
     a: i32,
     b: i32,
 }
-
 ```
-> Construim instantele structurilor dupa cum urmeaza:
 
 ```rust
 let ts = TupleStruct(1, 2);
@@ -632,8 +630,33 @@ println!("a: {}, b: {}", a, b);
 // Accesare
 println!("Accessing ts by name - {}{}", ts.0, ts.1);
 println!("Accessing ns by name - {}{}", ns.a, ns.b);
+```
+
+* Named structs provide clarity by explicitly naming each field, making it easier to understand the purpose of each component. Tuple structs are often shorter and more concise than named structs, making them suitable for simple wrapper types. For this purpose rust-rocket web framework package uses tuple structs
+
+```rust
+#[derive(rocket_db_pools::Database)]
+
+#[database("postgres")]
+pub struct DbConnection(rocket_db_pools::diesel::PgPool);
+```
+
+* **Semantic Grouping** when we represent RGB color values
+```rust
+struct Rgb(u8, u8, u8);
+```
+
+* Type alias for a 2D point using a tuple struct
+```rust
+struct Point(f64, f64);
+
+let origin = Point(0.0, 0.0);
+
+// Access fields of the tuple struct
+println!("x: {}, y: {}", origin.0, origin.1);
 
 ```
+
 
 
 
