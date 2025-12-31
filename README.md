@@ -476,7 +476,164 @@ fn main() {
 
 ---
 
+## Capitol 3 - Structuri de date
 
+### Struct
+> Un `struct` este o **colecție de câmpuri** (field-uri).
+
+> **Câmpurile** sunt pe scurt date asociate unei structuri. Valorile lor pot fi de tip **primar** sau o **structură de date**.
+
+Definiția `structurii` este ca o **matriță** pentru compilator pentru a ști cum să **aranjeze câmpurile în memorie** într-un mod compact.
+
+```rust
+struct Creatura {
+    // String este o structură
+    tip_animal: String,
+    nume: String,
+    brate: i32,
+    picioare: i32,
+    arma_de_aparare: String,
+}
+```
+
+### Apelarea metodelor
+
+> Spre deosebire de funcții, metodele sunt funcții asociate unui tip specific de date.
+
+> **metode statice** — metode care aparțin unui tip de date și sunt apelate folosind operatorul `::`
+
+> **metode ale instanței** — metode care aparțin unei instanțe a unui tip de date și sunt apelate folosind operatorul `.`
+
+```rust
+fn main() {
+    // Folosim o metodă statică ca să creem o instanță String
+    let s = String::from("Metoda statica pentru o instanta String");
+    println!("Static s = {}", s);
+    println!("Static::{}, metoda.instanta={}",s,s.len());
+}
+```
+
+### Memorie
+Aplicațiile scrise în Rust au 3 zone de memorie unde este stocată informație:
+
+> **memoria pentru date** - pentru date care sunt de dimensiune fixă și sunt **statice** (adică mereu disponibile pe toată durata rulării aplicației). Considerați textul din programul dumneavoastră (ex: `"Hello World!"`): memoria ocupată (bytes) de acest text este citită dintr-un singur loc în cod deci poate fi stocat în această zonă de memorie. 
+
+>Compilatoarele fac foarte multe optimizări pentru acest tip de date și folosirea lor în general este considerată foarte rapidă, pentru că locația lor este cunoscută și fixă.
+
+> **memoria pentru stivă (stack)** - pentru date declarate ca variabile în interiorul unei funcții (`variabile locale`). Locația în memorie a acestor date nu se schimbă pe durata apelului funcției; datorită acestui lucru compilatoarele pot optimiza codul astfel încât datele din stivă se accesează foarte rapid.
+
+> **memoria pentru alocare dinamică (heap)** - pentru date care sunt `create în timpul rulării aplicației`. Datele în această zonă de memorie pot fi **adăugate, mutate, șterse, redimensionate, etc.** 
+
+> Din cauza naturii sale dinamice, este în general considerată mai lentă, dar această zonă permite utilizări mult mai creative ale memoriei. Când adăugăm date în această zonă de memorie, numim această operație **alocare (de memorie)**. Când ștergem date din această zonă de memorie, numim această operație **dealocare (de memorie)**.
+
+### Crearea datelor in memorie
+
+> Când **instanțiem** o **structură** în codul nostru, aplicația creează câmpurile de date unul lângă altul în memorie.
+
+> Instanțiem o structură specificând toate valorile câmpurilor în interiorul
+
+`NumeleStructurii { ... }`
+
+> Câmpurile unei structuri sunt accesate folosind operatorul `.`
+
+
+* Textul din interiorul ghilimelelor este o dată care poate fi numai citită (ex: "Ferris"), deci acesta este pus în **zona memoriei pentru date**.
+
+* Apelul funcției `String::from` creează o structură de tip `String` ale cărei câmpuri sunt depuse, unul lângă altul, lângă câmpurile structurii, pe stivă. Un `String` reprezintă text care poate fi modificat în următoarele moduri:
+
+    * Se alocă memorie pe **heap** pentru text și acolo va putea fi modificat
+    * Stochează o referință la acea locație de pe heap în structura `String` (Mai multe despre acest concept în următoarele lecții)
+* Așadar, cei doi prieteni ai noștri, Ferris și Sarah, sunt structuri de date care vor avea mereu locații fixe în aplicația noastră, deci vor fi puși în stivă.
+
+```rust
+struct CreaturăMarină {
+    tip_animal: String,
+    nume: String,
+    nr_mâini: i32,
+    nr_picioare: i32,
+    armă: String,
+}
+
+fn main() {
+    // datele din CreaturăMarină sunt pe stivă
+    let ferris = CreaturăMarină {
+        // Struct-ul String este de asemenea pe stivă,
+        // dar ține o referință a informației pe heap
+        tip_animal: String::from("crab"),
+        nume: String::from("Ferris"),
+        nr_mâini: 2,
+        nr_picioare: 4,
+        armă: String::from("ghiară"),
+    };
+
+    let sarah = CreaturăMarină {
+        tip_animal: String::from("caracatiță"),
+        nume: String::from("Sarah"),
+        nr_mâini: 8,
+        nr_picioare: 0,
+        armă: String::from("creier"),
+    };
+    
+    println!(
+        "{} este {}. Are {} mâini, {} picioare, și {} pe post de armă",
+        ferris.nume, ferris.tip_animal, ferris.nr_mâini, ferris.nr_picioare, ferris.armă
+    );
+    println!(
+        "{} este {}. Are {} mâini, {} picioare. Nu are nicio armă..",
+        sarah.nume, sarah.tip_animal, sarah.nr_mâini, sarah.nr_picioare
+    );
+}
+
+```
+
+### Structuri de tip TUPLU
+
+> Puteti crea structuri care sunt folosite ca un tuplu.
+
+```rust
+struct Location(i32, i32);
+
+fn main() {
+    // Acesta este tot o structură pe stivă
+    let loc = Location(42, 32);
+    println!("{}, {}", loc.0, loc.1);
+}
+```
+
+###  struct numit si concis
+
+```rust
+struct TupleStruct(i32, i32);
+struct NormalStruct {
+    a: i32,
+    b: i32,
+}
+
+```
+> Construim instantele structurilor dupa cum urmeaza:
+
+```rust
+let ts = TupleStruct(1, 2);
+let ns = NormalStruct { a: 1, b: 2 };
+
+// shortcut to initialize the fields of a struct using the values of the
+// fields of another struct
+let ns2 = NormalStruct { a: 5, ..ns };
+let ts2 = TupleStruct { 0: 1, ..ts }; // for TupleStruct it needs curly brackets
+                                      // and implicit field names
+
+// Atribuire 
+let TupleStruct(x, y) = ts;
+println!("x: {}, y: {}", x, y);
+
+let NormalStruct { a, b } = ns;
+println!("a: {}, b: {}", a, b);
+
+// Accesare
+println!("Accessing ts by name - {}{}", ts.0, ts.1);
+println!("Accessing ns by name - {}{}", ns.a, ns.b);
+
+```
 
 
 
