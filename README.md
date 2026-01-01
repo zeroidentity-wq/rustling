@@ -600,7 +600,7 @@ fn main() {
 }
 ```
 
-### Grupare semnatica a Struct like TUPLU
+### Grupare semnatica a Struct de tip TUPLU
 
 ```rust
 struct TupleStruct(i32, i32);
@@ -614,11 +614,10 @@ struct NormalStruct {
 let ts = TupleStruct(1, 2);
 let ns = NormalStruct { a: 1, b: 2 };
 
-// shortcut to initialize the fields of a struct using the values of the
-// fields of another struct
+// shortcut pt a initializa campurile unui struct cu valori din alt struct
 let ns2 = NormalStruct { a: 5, ..ns };
-let ts2 = TupleStruct { 0: 1, ..ts }; // for TupleStruct it needs curly brackets
-                                      // and implicit field names
+let ts2 = TupleStruct { 0: 1, ..ts }; // pt. TupleStruct are nevoie de curly brackets
+                                      // si implicit numele campurilor
 
 // Atribuire 
 let TupleStruct(x, y) = ts;
@@ -634,6 +633,7 @@ println!("Accessing ns by name - {}{}", ns.a, ns.b);
 
 * Named structs provide clarity by explicitly naming each field, making it easier to understand the purpose of each component. Tuple structs are often shorter and more concise than named structs, making them suitable for simple wrapper types. For this purpose rust-rocket web framework package uses tuple structs
 
+
 ```rust
 #[derive(rocket_db_pools::Database)]
 
@@ -641,7 +641,7 @@ println!("Accessing ns by name - {}{}", ns.a, ns.b);
 pub struct DbConnection(rocket_db_pools::diesel::PgPool);
 ```
 
-* **Semantic Grouping** when we represent RGB color values
+* **Grupare Semantica** atunci cand reprezentam valori RGB
 ```rust
 struct Rgb(u8, u8, u8);
 ```
@@ -657,8 +657,126 @@ println!("x: {}, y: {}", origin.0, origin.1);
 
 ```
 
+### Structuri de tip unitate
 
+> **Structurile** nu trebuie neapărat să aibă câmpuri.
+După cum am menționat în Capitolul 1, unitate este o altă denumire pentru un tuplu gol, `()`. De aceea, acest tip de structuri se numește **Unit-like**.
+Acest tip de structuri este folosit rar.
 
+```rust
+struct Marcaj;
+fn main(){
+    let m = Marcaj;
+}
+```
+
+### Enumerari
+> **Enumerările** vă permit să creați un **tip nou de date** care poate avea o valoare dintr-o mulțime de elemente prestabilite folosind cuvântul cheie `enum`.
+
+> `match` ne ajută să abordăm toate valorile posibile ale unei enumerări, făcând din acest tip un instrument puternic pentru asigurarea calității codului.
+
+```rust
+#![allow(dead_code)] // această linie oprește avertizările compilatorului
+
+enum Specii {
+    Crab,
+    Caracatiță,
+    Pește,
+    Scoică
+}
+
+struct CreaturăMarină {
+    Specii: Specii,
+    nume: String,
+    nr_mâini: i32,
+    nr_picioare: i32,
+    armă: String,
+}
+
+fn main() {
+    let ferris = CreaturăMarină {
+        Specii: Specii::Crab,
+        nume: String::from("Ferris"),
+        nr_mâini: 2,
+        nr_picioare: 4,
+        armă: String::from("ghiară"),
+    };
+
+    match ferris.Specii {
+        Specii::Crab => println!("{} este crab",ferris.nume),
+        Specii::Caracatiță => println!("{} este caracatiță",ferris.nume),
+        Specii::Pește => println!("{} este pește",ferris.nume),
+        Specii::Scoică => println!("{} este scoică",ferris.nume),
+    }
+}
+
+```
+
+### Enumerările care conțin tipuri de date
+
+> Elementele unui `enum` pot avea de asemenea unul sau mai multe tipuri de date, permițându-i acestuia să se comporte ca un **union din limbajul C**.
+
+> Atunci când un `enum` este utilizat într-un `match`, puteți atașa un nume de variabilă fiecărei valori din enum.
+
+> Detalii despre memorie pentru un enum:
+
+* Spațiul de memorie alocat unei variabile de tip enumerare va fi egal cu spațiul de memorie necesar pentru stocarea celui mai mare element al enumerării. Acest lucru asigură faptul că orice valoare posibilă a enumerării va încăpea în același spațiu din memorie.
+* Pe lângă tipul de date al unui element (dacă acesta are un tip), fiecare element are de asemenea asociată o valoare numerică care reprezintă indexul acestuia în enumerare.
+
+> Alte detalii:
+
+> `enum`-ul din Rust este cunoscut și ca **uniune etichetată (tagged union)**.
+> Combinarea mai multor tipuri de date pentru a crea unul nou este ceea ce îi face pe oameni să afirme faptul că Rust are tipuri algebrice.
+
+```rust
+#![allow(dead_code)] // această linie oprește avertizările compilatorului
+
+enum Specii { Crab, Caracatiță, Pește, Scoică }
+enum TipOtravă { Acid, Dureros, Letal }
+enum Mărime { Mare, Mic }
+enum Armă {
+    Ghiară(i32, Mărime),
+    Otravă(TipOtravă),
+    None
+}
+
+struct CreaturăMarină {
+    Specii: Specii,
+    nume: String,
+    nr_mâini: i32,
+    nr_picioare: i32,
+    Armă: Armă,
+}
+
+fn main() {
+    // datele din CreaturăMarină sunt pe stivă
+    let ferris = CreaturăMarină {
+        // Struct-ul String este de asemenea pe stivă,
+        // dar ține o referință a informației pe heap
+        Specii: Specii::Crab,
+        nume: String::from("Ferris"),
+        nr_mâini: 2,
+        nr_picioare: 4,
+        Armă: Armă::Ghiară(2, Mărime::Mic),
+    };
+
+    match ferris.Specii {
+        Specii::Crab => {
+            match ferris.Armă {
+                Armă::Ghiară(nr_ghiare, Mărime) => {
+                    let mărime_descriere = match Mărime {
+                        Mărime::Mare => "mari",
+                        Mărime::Mic => "mici"
+                    };
+                    println!("ferris este un crab cu {} ghiare {}", nr_ghiare, mărime_descriere)
+                },
+                _ => println!("ferris este un crab cu alte arme")
+            }
+        },
+        _ => println!("ferris este alt animal"),
+    }
+}
+```
 
 
 
