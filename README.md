@@ -778,6 +778,146 @@ fn main() {
 }
 ```
 
+## Capitol 4 - Generice
+
+### Ce sunt tipurile generice?
+
+> Tipurile generice ne lasă să definim parțial o structură (`struct`) sau o enumerare (`enum`), permițând compilatorului să creeze o versiune definită complet în timpul compilării, bazată pe modul în care am folosit codul.
+
+> În general, Rust poate deduce tipul final analizând instanțierea noastră, dar dacă are nevoie de ajutor, puteți oricând să instanțiați explicit folosind operatorul `::<T>`, cunoscut sub numele de `turbofish` (e un bun prieten de-ai mei!).
+
+```rust
+// Un tip de structură definit parțial
+struct BagOfHolding<T> {
+    item: T,
+}
+
+fn main() {
+    // Observați: folosind tipuri generice, generăm tipuri create la momentul compilării
+    // Turbofish ne lasă să fim expliciți
+    let i32_bag = BagOfHolding::<i32> { item: 42 };
+    let bool_bag = BagOfHolding::<bool> { item: true };
+    
+    // Rust poate deduce tipuri și pentru cele generice!
+    let float_bag = BagOfHolding { item: 3.14 };
+    
+    // Atenție: nu puneți niciodată o geantă în altă geantă în viața reală
+    let bag_in_bag = BagOfHolding {
+        item: BagOfHolding { item: "boom!" },
+    };
+
+    println!(
+        "{} {} {} {}",
+        i32_bag.item, bool_bag.item, float_bag.item, bag_in_bag.item.item
+    );
+}
+
+```
+
+### Reprezentarea nimicului
+
+> În alte limbaje, cuvântul cheie `null` este folosit pentru a reprezenta absența unei valori. El creează dificultăți în limbajele de programare, pentru că este posibil ca aplicația noastră să eșueze când interacționează cu o variabilă sau un câmp cu această valoare.
+
+> Rust nu are tipul `null`, dar nu este ignorant când vine vorba de importanța reprezentării nimicului! Gândiți-vă la o reprezentare naivă folosind o unealtă pe care o cunoaștem deja.
+
+> Alternativa `None` pentru una sau mai multe valori care pot varia este așa de des întâlnită în Rust din cauza lipsei unei valori `null`. Tipurile generice ne ajută însă să trecem de acest obstacol.
+
+```rust
+enum Item {
+    Inventar(String),
+    // None reprezintă absența unui element
+    None,
+}
+
+struct Geantă {
+    item: Item,
+}
+
+```
+
+### Option<T>
+
+Rust are o enumerare deja implementată numită `Option` care ne permite să reprezentăm valori care pot fi nule (`nullable`) fără să folosim `null`.
+
+```rust
+enum Option<T> {
+    None,
+    Some(T),
+}
+```
+> Această enumerare este foarte comună, instanțe ale acestei enumerări pot fi create oriunde prin intermediul elementelor din enumerare `Some` și `None`.
+
+```rust
+// Un tip de structură definit parțial
+struct Geantă<T> {
+    // Tipul de parametru T poate fi folosit din Option
+    item: Option<T>,
+}
+
+fn main() {
+    // Observați: O geantă pentru i32, care nu conține nimic! Trebuie să
+    // specificăm tipul, altfel Rust nu va ști ce tip poate ține geanta
+    let i32_geantă = Geantă::<i32> { item: None };
+
+    if i32_geantă.item.is_none() {
+        println!("nu este nimic în geantă!")
+    } else {
+        println!("se află ceva în geantă!")
+    }
+
+    let i32_geantă = Geantă::<i32> { item: Some(42) };
+
+    if i32_geantă.item.is_some() {
+        println!("se află ceva în geantă!")
+    } else {
+        println!("nu este nimic în geantă!")
+    }
+
+    // match ne permite să destructurăm Option în mod elegant pentru
+    // a gestiona toate cazurile posibile!
+    match i32_geantă.item {
+        Some(v) => println!("găsit {} în geantă!", v),
+        None => println!("nu a fost găsit nimic"),
+    }
+}
+
+```
+
+### Result <T,E> Tratarea erorilor
+
+> Rust are o enumerare deja implementată numită `Result` care ne permite să returnăm o valoare care poate eșua în cadrul unei instrucțiuni. Este modalitatea idiomatică în care limbajul Rust tratează posibilele erori.
+
+```rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+> Observăm ca aceste tipuri generice au multiple tipuri parametrizate **separate prin virgulă**.
+
+> Această **enumerare este foarte comună**, instanțe ale ei pot fi create oriunde prin intermediul elementelor din enumerare `Ok` și `Err`.
+
+```rust
+fn execută_ceva_ce_poate_eșua(i:i32) -> Result<f32,String> {
+    if i == 42 {
+        Ok(13.0)
+    } else {
+        Err(String::from("acesta nu este numărul corect"))   
+    }
+}
+
+fn main() {
+    let result = execută_ceva_ce_poate_eșua(12);
+
+    // match ne permite să destructurăm Result-ul într-un mod elegant
+    // ca să gestionăm toate cazurile posibile
+    match result {
+        Ok(v) => println!("găsit {}", v),
+        Err(e) => println!("Eroare: {}", e),
+    }
+}
+
+```
 
 
 
