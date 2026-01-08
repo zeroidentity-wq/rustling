@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/c1_base/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c1_basys/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c2_control_flow/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c3_data_structures/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tupless/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/c1_base/target" />
+      <excludeFolder url="file://$MODULE_DIR$/c1_basys/target" />
+      <excludeFolder url="file://$MODULE_DIR$/c2_control_flow/target" />
+      <excludeFolder url="file://$MODULE_DIR$/c3_data_structures/target" />
+      <excludeFolder url="file://$MODULE_DIR$/tupless/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

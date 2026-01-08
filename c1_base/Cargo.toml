@@ -1,6 +1,12 @@
+bin = [
+    { name = "c1_base", path = "c1_base.rs" },
+]
+
 [package]
 name = "c1_base"
 version = "0.1.0"
 edition = "2024"
 
+
 [dependencies]
+
