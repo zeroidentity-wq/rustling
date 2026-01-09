@@ -986,6 +986,75 @@ fn main() -> Result<(), String> {
 
 ```
 
+### Gestionarea inadecvată a enumerărilor Option/Result
 
+> Folosirea `Option`/`Result` poate fi obositoare când încercați doar să scrieți rapid niște cod. Și `Option`, și `Result` au o funcție numită `unwrap` care poate fi utilă pentru a primi o valoare rapid, dar în mod periculos. `unwrap` va fi:
+
+* valoare din `Option`/`Result`
+* `panic!`, dacă enumerarea este de tip `None`/`Err`
+
+> Următoarele bucăți de cod sunt echivalente:
+
+```rust
+opțiunea_mea.unwrap()
+
+match opțiunea_mea {
+    Some(v) => v,
+    None => panic!("un mesaj de eroare generat de Rust!"),
+}
+```
+
+> În mod similar:
+
+```rust
+rezultatul_meu.unwrap()
+
+match rezultatul_meu {
+    Ok(v) => v,
+    Err(e) => panic!("un mesaj de eroare generat de Rust!"),
+}
+```
+
+> Fiți un bun Rustaceu și folosiți-vă de `match` când puteți face asta!
+
+### Vectori
+ Unele din cele mai utile tipuri generice sunt colecțiile. Un **vector** este o listă de dimensiune variabilă de elemente reprezentate de **structura** `Vec`.
+
+Macro-ul `vec!` ne permite să creăm mai ușor un vector decât l-am construi manual.
+
+`Vec` are metoda `iter()` care **creează un iterator** dintr-un vector, fiind astfel foarte ușor să punem un vector în interiorul unei bucle for.
+
+Detalii despre memorie:
+
+
+* `Vec` este o structură, dar în interior conține o referință la o listă fixă a elementelor sale din **heap**.
+
+* Un vector începe cu o capacitate implicită; când sunt adăugate mai multe elemente decât poate conține, acesta realocă elementele sale pe heap pentru a avea o nouă listă fixă mai mare.
+
+```rust
+fn main() {
+    // Putem fi expliciți cu privire la tip
+    let mut i32_vec = Vec::<i32>::new(); // turbofish <3
+    i32_vec.push(1);
+    i32_vec.push(2);
+    i32_vec.push(3);
+
+    // Rust este foarte inteligent când vine vorba de determinarea automată a tipului
+    let mut float_vec = Vec::new();
+    float_vec.push(1.3);
+    float_vec.push(2.3);
+    float_vec.push(3.4);
+
+    // Este un macro superb!
+    let string_vec = vec![String::from("Salutare"), String::from("Lume")];
+
+    for cuvânt in string_vec.iter() {
+        println!("{}", cuvânt);
+    }
+}
+
+```
+
+## Capitolul 5 - Proprietatea și împrumutul datelor
 
 
